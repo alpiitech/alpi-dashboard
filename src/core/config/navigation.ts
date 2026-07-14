@@ -30,11 +30,8 @@
 import type { LucideIcon } from "lucide-react"
 import {
   BadgePercent,
-  BarChart2,
-  BookOpen,
   CalendarClock,
   CalendarDays,
-  Compass,
   CreditCard,
   Globe,
   HandCoins,

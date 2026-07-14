@@ -34,7 +34,7 @@ export function useTableSort<TKey extends string>(defaultKey: TKey, defaultDir: 
     return [...rows].sort((a, b) => {
       const aVal = getValue ? getValue(sortKey, a) : (a[sortKey] as string | number) ?? ""
       const bVal = getValue ? getValue(sortKey, b) : (b[sortKey] as string | number) ?? ""
-      let cmp = 0
+      let cmp: number
       if (typeof aVal === "number" && typeof bVal === "number") {
         cmp = aVal - bVal
       } else {
@@ -95,7 +95,7 @@ export function sortByKey<TRow extends Record<string, unknown>>(
   return [...rows].sort((a, b) => {
     const aVal = a[key] ?? ""
     const bVal = b[key] ?? ""
-    let cmp = 0
+    let cmp: number
     if (numericKeys.includes(key)) {
       cmp = Number(aVal) - Number(bVal)
     } else {

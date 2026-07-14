@@ -4,7 +4,7 @@ import { useNavigate } from "react-router"
 import { ErrorState } from "@/components/dashboard/error-state"
 import { LoadingState } from "@/components/dashboard/loading-state"
 import { PageShell, type StatCard } from "@/components/dashboard/page-shell"
-import { SortableHead, sortByKey, useTableSort } from "@/components/dashboard/sortable-table"
+import { SortableHead, useTableSort } from "@/components/dashboard/sortable-table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -73,7 +73,7 @@ export function ActivitiesPage() {
     })
 
     rows = [...rows].sort((a, b) => {
-      let cmp = 0
+      let cmp: number
       if (sortKey === "price") {
         cmp = a.price - b.price
       } else if (sortKey === "status") {

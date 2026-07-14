@@ -17,6 +17,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import { CommandMenu } from "@/components/dashboard/command-menu"
+import { appConfig } from "@/core/config/app-config"
 import { useUiStore } from "@/stores/ui-store"
 import { useAuthStore } from "@/stores/auth-store"
 import { useLogoutMutation } from "@/features/auth/auth.mutations"
@@ -37,7 +38,7 @@ export function AppHeader() {
 
   return (
     <header className="sticky top-0 z-30 shrink-0 border-b border-border bg-background px-4 sm:px-5 md:px-6 lg:px-8">
-      <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-3">
+      <div className="relative mx-auto flex h-16 w-full max-w-7xl items-center gap-3">
         {/* Mobile menu trigger */}
         <Button
           variant="ghost"
@@ -48,6 +49,15 @@ export function AppHeader() {
         >
           <Menu size={20} />
         </Button>
+
+        {/* Logo — centered on mobile only */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:hidden">
+          <img
+            src="/alpi-logo.webp"
+            alt={appConfig.name}
+            className="size-8 rounded-full object-cover"
+          />
+        </div>
 
         {/* Search — left-aligned, grows to fill space */}
         <div className="flex-1">

@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react"
 import { CheckCircle2, CircleOff, Layers3, Plus, Tag } from "lucide-react"
-import { PageShell, DummyTable, StatusBadge, type StatCard } from "@/components/dashboard/page-shell"
+import { PageShell, StatusBadge, type StatCard } from "@/components/dashboard/page-shell"
 import { SortableHead, sortByKey, useTableSort } from "@/components/dashboard/sortable-table"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Table,

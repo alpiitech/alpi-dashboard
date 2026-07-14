@@ -6,7 +6,7 @@ import {
   useMemo,
   useState,
 } from "react"
-import { MoreHorizontal, Search, type LucideIcon } from "lucide-react"
+import { ArrowDown, ArrowUp, ArrowUpDown, MoreHorizontal, Search, type LucideIcon } from "lucide-react"
 import { PageHeader } from "@/components/dashboard/page-header"
 import { Button } from "@/components/ui/button"
 import {
@@ -231,6 +231,17 @@ function getRowText(row: TableRowData) {
   return Object.values(row).map(getNodeText).join(" ").toLowerCase()
 }
 
+function compareNodes(a: ReactNode, b: ReactNode) {
+  const aText = getNodeText(a)
+  const bText = getNodeText(b)
+  const aNum = Number(aText)
+  const bNum = Number(bText)
+  if (aText !== "" && bText !== "" && !Number.isNaN(aNum) && !Number.isNaN(bNum)) {
+    return aNum - bNum
+  }
+  return aText.localeCompare(bText)
+}
+
 export function DummyTable({
   columns,
   rows,
@@ -240,6 +251,17 @@ export function DummyTable({
 }) {
   const { activeTab, search } = useContext(TableFilterContext)
   const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set())
+  const [sortKey, setSortKey] = useState<string | null>(null)
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc")
+
+  function toggleSort(key: string) {
+    if (sortKey === key) {
+      setSortDir((dir) => (dir === "asc" ? "desc" : "asc"))
+    } else {
+      setSortKey(key)
+      setSortDir("asc")
+    }
+  }
 
   const visibleRows = useMemo(() => {
     const term = search.trim().toLowerCase()
@@ -247,23 +269,30 @@ export function DummyTable({
       .map((row, index) => ({ index, row, text: getRowText(row) }))
       .filter(({ text }) => !term || text.includes(term))
 
-    if (!activeTab || activeTab === "All" || activeTab === "Users" || activeTab === "Profiles") {
-      return searched
+    let filtered = searched
+    if (activeTab && activeTab !== "All" && activeTab !== "Users" && activeTab !== "Profiles") {
+      const normalizedTab = activeTab
+        .toLowerCase()
+        .replace("pending verification", "pending")
+        .replace("pending payouts", "pending")
+        .replace("paid payouts", "paid")
+        .replace("agent payables", "agent")
+        .replace("affiliate payables", "affiliate")
+        .replace("revision requests", "revision requested")
+      const matchingTabRows = searched.filter(({ text }) => text.includes(normalizedTab))
+
+      // Some tabs represent alternate views not modeled in Sprint 1 mock rows.
+      filtered = matchingTabRows.length > 0 ? matchingTabRows : searched
     }
 
-    const normalizedTab = activeTab
-      .toLowerCase()
-      .replace("pending verification", "pending")
-      .replace("pending payouts", "pending")
-      .replace("paid payouts", "paid")
-      .replace("agent payables", "agent")
-      .replace("affiliate payables", "affiliate")
-      .replace("revision requests", "revision requested")
-    const matchingTabRows = searched.filter(({ text }) => text.includes(normalizedTab))
+    if (!sortKey) return filtered
 
-    // Some tabs represent alternate views not modeled in Sprint 1 mock rows.
-    return matchingTabRows.length > 0 ? matchingTabRows : searched
-  }, [activeTab, rows, search])
+    const sorted = [...filtered].sort((a, b) => {
+      const cmp = compareNodes(a.row[sortKey], b.row[sortKey])
+      return sortDir === "asc" ? cmp : -cmp
+    })
+    return sorted
+  }, [activeTab, rows, search, sortKey, sortDir])
 
   const allVisibleSelected =
     visibleRows.length > 0 && visibleRows.every(({ index }) => selectedRows.has(index))
@@ -318,14 +347,35 @@ export function DummyTable({
                 className="size-4 rounded border-border accent-primary"
               />
             </TableHead>
-            {columns.map((column) => (
-              <TableHead
-                key={column.key}
-                className={cn("normal-case tracking-normal", column.className)}
-              >
-                {column.label}
-              </TableHead>
-            ))}
+            {columns.map((column) => {
+              const isActive = sortKey === column.key
+              return (
+                <TableHead
+                  key={column.key}
+                  className={cn("normal-case tracking-normal", column.className)}
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggleSort(column.key)}
+                    className={cn(
+                      "inline-flex cursor-pointer items-center gap-1.5 rounded-sm outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary/20",
+                      isActive && "text-foreground",
+                    )}
+                  >
+                    {column.label}
+                    {isActive ? (
+                      sortDir === "asc" ? (
+                        <ArrowUp className="size-3.5 text-primary" />
+                      ) : (
+                        <ArrowDown className="size-3.5 text-primary" />
+                      )
+                    ) : (
+                      <ArrowUpDown className="size-3.5 text-muted-foreground/50" />
+                    )}
+                  </button>
+                </TableHead>
+              )
+            })}
             <TableHead className="w-12" />
           </TableRow>
         </TableHeader>
