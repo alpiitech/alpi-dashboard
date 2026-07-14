@@ -1,13 +1,14 @@
 import { useState } from "react"
+import { CircleDollarSign, Clock3, Loader2, ReceiptText } from "lucide-react"
 import { PageShell, DummyTable, StatusBadge, type StatCard } from "@/components/dashboard/page-shell"
 
 const TABS = ["All", "Requested", "Approved Full", "Approved Partial", "Rejected", "Ongoing", "Refunded"]
 
 const CARDS: StatCard[] = [
-  { label: "Total Refunds", value: "38" },
-  { label: "Requested", value: "5", sub: "awaiting review" },
-  { label: "Ongoing", value: "3" },
-  { label: "Refunded", value: "28", sub: "completed" },
+  { label: "Total Refunds", value: "38", sub: "All refund cases", icon: ReceiptText, tone: "info" },
+  { label: "Requested", value: "5", sub: "Awaiting review", icon: Clock3, tone: "warning" },
+  { label: "Ongoing", value: "3", sub: "Being processed", icon: Loader2, tone: "danger" },
+  { label: "Refunded", value: "28", sub: "Successfully completed", icon: CircleDollarSign, tone: "success" },
 ]
 
 const COLUMNS = [

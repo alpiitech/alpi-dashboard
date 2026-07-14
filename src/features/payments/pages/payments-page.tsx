@@ -1,13 +1,14 @@
 import { useState } from "react"
+import { CreditCard, CircleCheck, Clock3, TriangleAlert } from "lucide-react"
 import { PageShell, DummyTable, StatusBadge, type StatCard } from "@/components/dashboard/page-shell"
 
 const TABS = ["All", "Pending", "Succeeded", "Failed", "Expired", "Partially Refunded", "Fully Refunded"]
 
 const CARDS: StatCard[] = [
-  { label: "Total Payments", value: "892" },
-  { label: "Succeeded", value: "834", sub: "this month" },
-  { label: "Pending", value: "22" },
-  { label: "Failed / Expired", value: "36" },
+  { label: "Total Payments", value: "892", sub: "All recorded payments", icon: CreditCard, tone: "info" },
+  { label: "Succeeded", value: "834", sub: "This month", icon: CircleCheck, tone: "success" },
+  { label: "Pending", value: "22", sub: "Awaiting confirmation", icon: Clock3, tone: "warning" },
+  { label: "Failed / Expired", value: "36", sub: "Needs follow-up", icon: TriangleAlert, tone: "danger" },
 ]
 
 const COLUMNS = [

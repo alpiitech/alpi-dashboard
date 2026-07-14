@@ -1,13 +1,14 @@
 import { useState } from "react"
+import { CircleCheck, EyeOff, MessageSquare, Star } from "lucide-react"
 import { PageShell, DummyTable, StatusBadge, type StatCard } from "@/components/dashboard/page-shell"
 
 const TABS = ["All", "Pending", "Approved", "Rejected", "Hidden"]
 
 const CARDS: StatCard[] = [
-  { label: "Total Reviews", value: "312" },
-  { label: "Pending Moderation", value: "14" },
-  { label: "Approved", value: "288" },
-  { label: "Hidden / Rejected", value: "10" },
+  { label: "Total Reviews", value: "312", sub: "All submitted reviews", icon: MessageSquare, tone: "info" },
+  { label: "Pending Moderation", value: "14", sub: "Awaiting approval", icon: Star, tone: "warning" },
+  { label: "Approved", value: "288", sub: "Visible to public", icon: CircleCheck, tone: "success" },
+  { label: "Hidden / Rejected", value: "10", sub: "Removed from public", icon: EyeOff, tone: "danger" },
 ]
 
 const COLUMNS = [

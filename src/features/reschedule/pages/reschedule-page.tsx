@@ -1,13 +1,14 @@
 import { useState } from "react"
+import { CalendarClock, CalendarCheck2, CircleDollarSign, Clock3 } from "lucide-react"
 import { PageShell, DummyTable, StatusBadge, type StatCard } from "@/components/dashboard/page-shell"
 
 const TABS = ["All", "Requested", "Approved", "Rejected", "Refund Eligible"]
 
 const CARDS: StatCard[] = [
-  { label: "Total Requests", value: "24" },
-  { label: "Pending", value: "7", sub: "awaiting decision" },
-  { label: "Approved", value: "14" },
-  { label: "Refund Eligible", value: "3" },
+  { label: "Total Requests", value: "24", sub: "All reschedule requests", icon: CalendarClock, tone: "info" },
+  { label: "Pending", value: "7", sub: "Awaiting decision", icon: Clock3, tone: "warning" },
+  { label: "Approved", value: "14", sub: "Date change confirmed", icon: CalendarCheck2, tone: "success" },
+  { label: "Refund Eligible", value: "3", sub: "Agent rejected eligible request", icon: CircleDollarSign, tone: "danger" },
 ]
 
 const COLUMNS = [
