@@ -15,7 +15,7 @@ export function EmployeesPage() {
     <PageShell
       title="Employees"
       description="A future HR/personnel module preview. Employees remain separate from dashboard user accounts."
-      actions={
+      action={
         <Button size="lg">
           <Plus />
           Add employee

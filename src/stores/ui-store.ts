@@ -37,7 +37,7 @@ export const useUiStore = create<UiState>()(
       sidebarCollapsed: false,
       mobileSidebarOpen: false,
       themeMode: "system",
-      sidebarStyle: "rail",
+      sidebarStyle: "default",
       radiusPreset: "default",
       setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
       setMobileSidebarOpen: (mobileSidebarOpen) => set({ mobileSidebarOpen }),
@@ -47,7 +47,7 @@ export const useUiStore = create<UiState>()(
     }),
     {
       name: "erp-dashboard-ui",
-      version: 2,
+      version: 3,
       migrate: (persistedState) => {
         if (!persistedState || typeof persistedState !== "object") {
           return persistedState

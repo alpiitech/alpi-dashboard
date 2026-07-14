@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Caption, H5, Strong, Text } from "@/components/ui/typography"
-import { navigationItems } from "@/core/config/navigation"
+import { sidebarSections } from "@/core/config/navigation"
 import { cn } from "@/shared/utils/cn"
 
 export function CommandMenu() {
@@ -31,9 +31,11 @@ export function CommandMenu() {
 
   const results = useMemo(() => {
     const term = search.trim().toLowerCase()
-    if (!term) return navigationItems
-    return navigationItems.filter((item) =>
-      [item.label, item.href].some((value) =>
+    // sidebarSections is a flat list of SidebarSection — each has label, icon, href
+    const navigable = sidebarSections.filter((s) => s.href)
+    if (!term) return navigable
+    return navigable.filter((item) =>
+      [item.label, item.href ?? ""].some((value) =>
         value.toLowerCase().includes(term),
       ),
     )
@@ -93,7 +95,7 @@ export function CommandMenu() {
                     <button
                       key={item.href}
                       type="button"
-                      onClick={() => handleNavigate(item.href)}
+                      onClick={() => handleNavigate(item.href!)}
                       className={cn(
                         "flex w-full items-center gap-3 rounded-[var(--radius-button)] px-3 py-2 text-left transition-colors duration-150 hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20",
                       )}

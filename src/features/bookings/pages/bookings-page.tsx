@@ -156,6 +156,7 @@ export function BookingsPage() {
 
   return (
     <div className="space-y-5">
+      {/* Page header */}
       <PageHeader
         title="Bookings"
         description="Review booking status, payments, schedules, and operational follow-up."
@@ -171,7 +172,8 @@ export function BookingsPage() {
         }
       />
 
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      {/* Stat cards */}
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {bookingsQuery.isLoading ? (
           <LoadingState variant="stats" />
         ) : (
@@ -181,51 +183,58 @@ export function BookingsPage() {
               value={String(stats.total)}
               description="Mock operational queue"
               icon={Plane}
+              tone="info"
             />
             <StatCard
               label="Pending payment"
               value={String(stats.pendingPayments)}
               description="Need customer follow-up"
               icon={CreditCard}
+              tone="warning"
             />
             <StatCard
               label="Upcoming trips"
               value={String(stats.upcoming)}
               description="Paid and scheduled"
               icon={TimerReset}
+              tone="success"
             />
             <StatCard
               label="Attention needed"
               value={String(stats.attention)}
               description="Payment or expiry review"
               icon={CircleAlert}
+              tone="danger"
             />
           </>
         )}
+      </div>
+
+      {/* Filter bar + table wrapped in surface */}
+      <section className="overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface">
+        <BookingsFilters
+          search={search}
+          status={status}
+          paymentStatus={paymentStatus}
+          previewState={previewState}
+          activeFilterCount={activeFilterCount}
+          onSearchChange={setSearch}
+          onStatusChange={setStatus}
+          onPaymentStatusChange={setPaymentStatus}
+          onPreviewStateChange={setPreviewState}
+          onClearFilters={clearFilters}
+        />
+
+        <BookingsTable
+          bookings={tableData}
+          isLoading={bookingsQuery.isLoading || previewState === "loading"}
+          isError={bookingsQuery.isError || previewState === "error"}
+          isFiltered={previewState !== "empty" && activeFilterCount > 0}
+          onRetry={retryLoad}
+          onClearFilters={clearFilters}
+          onRowClick={(booking) => setSelectedBooking(booking)}
+        />
       </section>
-
-      <BookingsFilters
-        search={search}
-        status={status}
-        paymentStatus={paymentStatus}
-        previewState={previewState}
-        activeFilterCount={activeFilterCount}
-        onSearchChange={setSearch}
-        onStatusChange={setStatus}
-        onPaymentStatusChange={setPaymentStatus}
-        onPreviewStateChange={setPreviewState}
-        onClearFilters={clearFilters}
-      />
-
-      <BookingsTable
-        bookings={tableData}
-        isLoading={bookingsQuery.isLoading || previewState === "loading"}
-        isError={bookingsQuery.isError || previewState === "error"}
-        isFiltered={previewState !== "empty" && activeFilterCount > 0}
-        onRetry={retryLoad}
-        onClearFilters={clearFilters}
-        onRowClick={(booking) => setSelectedBooking(booking)}
-      />
 
       <BookingDetailDrawer
         booking={selectedBookingFromState}

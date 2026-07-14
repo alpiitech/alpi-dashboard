@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 import { useLocation, useNavigate } from "react-router"
 import { appConfig } from "@/core/config/app-config"
-import { sidebarSections, type SidebarSection } from "@/core/config/navigation"
+import { sidebarGroups, sidebarSections, type SidebarSection } from "@/core/config/navigation"
 import { useUiStore } from "@/stores/ui-store"
 import { cn } from "@/shared/utils/cn"
 import { FlyoutMenuTree } from "./flyout-menu-tree"
@@ -33,8 +33,8 @@ export function RailSidebar({ mobile = false }: { mobile?: boolean }) {
     : 0
   const flyoutTop =
     activeSectionIndex <= 4
-      ? `calc(4rem + ${activeSectionIndex} * 3.8rem)`
-      : `clamp(4.5rem, calc(4rem + ${activeSectionIndex} * 3.8rem - 9rem), calc(100dvh - 34rem))`
+      ? `calc(4rem + ${activeSectionIndex} * 3.2rem)`
+      : `clamp(4.5rem, calc(4rem + ${activeSectionIndex} * 3.2rem - 9rem), calc(100dvh - 34rem))`
 
   function handleRailClick(section: SidebarSection) {
     if (section.href && section.items.length === 0) {
@@ -59,7 +59,7 @@ export function RailSidebar({ mobile = false }: { mobile?: boolean }) {
     if (mobile) setMobileOpen(false)
   }
 
-  // Mobile: rail + inline expandable panel stacked vertically, full height scrollable
+  // Mobile: grouped nav with labels, full height scrollable
   if (mobile) {
     return (
       <div className="flex h-full w-full flex-col overflow-y-auto bg-slate-950 font-sans text-white">
@@ -81,82 +81,85 @@ export function RailSidebar({ mobile = false }: { mobile?: boolean }) {
           </span>
         </div>
 
-        {/* Nav sections */}
-        <nav className="flex flex-1 flex-col gap-px p-2">
-          {sidebarSections.map((section) => {
-            const isSelected = activeSectionId === section.id
-            const isRouteActive = sectionHasActiveRoute(
-              section,
-              location.pathname,
-            )
-            const Icon = section.icon
-            const hasItems = section.items.length > 0
-
-            return (
-              <div key={section.id}>
-                <button
-                  className={cn(
-                    "flex w-full items-center gap-3 rounded-[var(--radius-button)] px-3 py-2.5 text-sm text-slate-400 outline-none transition-colors duration-150 hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-primary/35",
-                    (isSelected || isRouteActive) &&
-                      "bg-primary font-medium text-primary-foreground",
-                  )}
-                  onClick={() => handleRailClick(section)}
-                  aria-label={section.label}
-                >
-                  <Icon size={17} className="shrink-0" />
-                  <span className="min-w-0 flex-1 truncate text-left">
-                    {section.label}
-                  </span>
-                  {hasItems && (
-                    <svg
-                      className={cn(
-                        "size-4 shrink-0 text-slate-500 transition-transform duration-150",
-                        isSelected && "rotate-90",
-                      )}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  )}
-                </button>
-
-                {/* Inline sub-menu when expanded */}
-                {isSelected && hasItems && (
-                  <div className="ml-4 mt-px border-l border-border pl-3 pb-1">
-                    {section.items.map((item) => (
-                      <FlyoutMenuTree
-                        key={item.label}
-                        item={item}
-                        itemKey={`${section.id}/${item.label}`}
-                        onNavigate={handleNavigate}
-                        selectedKey={selectedMenuKey}
-                        onSelect={setSelectedMenuKey}
-                      />
-                    ))}
-                  </div>
-                )}
+        {/* Nav sections grouped */}
+        <nav className="flex flex-1 flex-col p-3">
+          {sidebarGroups.map((group, groupIndex) => (
+            <div key={group.id} className={groupIndex > 0 ? "mt-4" : undefined}>
+              <div className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                {group.label}
               </div>
-            )
-          })}
+              {group.sections.map((section) => {
+                const isSelected = activeSectionId === section.id
+                const isRouteActive = sectionHasActiveRoute(section, location.pathname)
+                const Icon = section.icon
+                const hasItems = section.items.length > 0
+
+                return (
+                  <div key={section.id}>
+                    <button
+                      className={cn(
+                        "flex w-full items-center gap-2.5 rounded-[var(--radius-button)] px-2 py-2 text-sm text-slate-400 outline-none transition-colors duration-150 hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-primary/35",
+                        (isSelected || isRouteActive) &&
+                          "bg-primary font-medium text-primary-foreground",
+                      )}
+                      onClick={() => handleRailClick(section)}
+                      aria-label={section.label}
+                    >
+                      <Icon size={16} className="shrink-0" />
+                      <span className="min-w-0 flex-1 truncate text-left text-[13px]">
+                        {section.label}
+                      </span>
+                      {hasItems && (
+                        <svg
+                          className={cn(
+                            "size-4 shrink-0 text-slate-500 transition-transform duration-150",
+                            isSelected && "rotate-90",
+                          )}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      )}
+                    </button>
+
+                    {isSelected && hasItems && (
+                      <div className="ml-4 mt-px border-l border-border pl-3 pb-1">
+                        {section.items.map((item) => (
+                          <FlyoutMenuTree
+                            key={item.label}
+                            item={item}
+                            itemKey={`${section.id}/${item.label}`}
+                            onNavigate={handleNavigate}
+                            selectedKey={selectedMenuKey}
+                            onSelect={setSelectedMenuKey}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          ))}
         </nav>
       </div>
     )
   }
 
-  // Desktop: original rail with flyout
+  // Desktop: icon rail with group separators + flyout
   return (
     <aside
       onMouseLeave={() => setActiveSectionId(null)}
       className="relative z-40 flex h-dvh w-16 shrink-0 overflow-visible border-r border-white/10 bg-slate-950 font-sans text-white sticky top-0 hidden lg:flex"
     >
-      <div className="flex w-16 shrink-0 flex-col items-center">
+      <div className="flex w-16 shrink-0 flex-col items-center overflow-y-auto">
         <div className="flex h-16 w-full shrink-0 items-center justify-center border-b border-white/10 px-2">
           <button
             className="grid size-9 place-items-center rounded-[var(--radius-button)] bg-white/8 text-white outline-none transition-colors duration-150 hover:bg-white/12 focus-visible:ring-2 focus-visible:ring-primary/35"
@@ -171,33 +174,33 @@ export function RailSidebar({ mobile = false }: { mobile?: boolean }) {
           </button>
         </div>
 
-        <nav className="mt-3 flex flex-1 flex-col items-center gap-1.5">
-          {sidebarSections.map((section) => {
-            const isSelected = activeSectionId === section.id
-            const isRouteActive = sectionHasActiveRoute(
-              section,
-              location.pathname,
-            )
-            const Icon = section.icon
-            return (
-              <button
-                key={section.id}
-                className={cn(
-                  "grid size-10 place-items-center rounded-[var(--radius-button)] text-slate-400 outline-none transition-colors duration-150 hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-primary/35",
-                  (isSelected || isRouteActive) && "bg-primary text-primary-foreground",
-                )}
-                onMouseEnter={() => handleRailHover(section)}
-                onFocus={() => handleRailHover(section)}
-                onClick={() => handleRailClick(section)}
-                aria-label={section.label}
-              >
-                <Icon size={18} strokeWidth={1.9} />
-              </button>
-            )
-          })}
+        <nav className="mt-2 flex flex-1 flex-col items-center gap-0 w-full px-2 pb-3">
+          {sidebarGroups.map((group, groupIndex) => (
+            <div key={group.id} className={cn("flex w-full flex-col items-center gap-0.5", groupIndex > 0 && "mt-1 pt-1 border-t border-white/8")}>
+              {group.sections.map((section) => {
+                const isSelected = activeSectionId === section.id
+                const isRouteActive = sectionHasActiveRoute(section, location.pathname)
+                const Icon = section.icon
+                return (
+                  <button
+                    key={section.id}
+                    className={cn(
+                      "grid size-10 place-items-center rounded-[var(--radius-button)] text-slate-400 outline-none transition-colors duration-150 hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-primary/35",
+                      (isSelected || isRouteActive) && "bg-primary text-primary-foreground",
+                    )}
+                    onMouseEnter={() => handleRailHover(section)}
+                    onFocus={() => handleRailHover(section)}
+                    onClick={() => handleRailClick(section)}
+                    aria-label={section.label}
+                    title={section.label}
+                  >
+                    <Icon size={17} strokeWidth={1.9} />
+                  </button>
+                )
+              })}
+            </div>
+          ))}
         </nav>
-
-
       </div>
 
       {/* Flyout panel */}

@@ -8,8 +8,11 @@ export function menuItemHasActiveRoute(item: SidebarMenuItem, pathname: string):
 }
 
 export function sectionHasActiveRoute(section: SidebarSection, pathname: string): boolean {
-  if (section.href === pathname) {
-    return true
+  if (section.href) {
+    // exact match or prefix match (e.g. /activities matches /activities/123)
+    if (section.href === pathname || pathname.startsWith(section.href + "/")) {
+      return true
+    }
   }
   return section.items.some((item) => menuItemHasActiveRoute(item, pathname))
 }
